@@ -15,27 +15,31 @@ class Concat(object):
 
     # Append new line
     def add_nl(self, number):
-        if not re.search("\s$", self.line[number - 1]):
-            line_s = []
-            line_s.append(self.line[number - 1] + "\n")
-        else:
-            line_s = self.line
-        return line_s
+        if not re.search("\s$", self.line[number]):
+            self.line[number] = self.line[number] + "\n"
+
+    # Append spase
+    def add_spase(self, number):
+        if not re.search("\s$", self.line[number]):
+            self.line[number] = self.line[number] + " "
 
     # Sort tickers
     def sort(self):
         if self.line:
             if len(self.line) == 1:
-                stocks_var = Concat.add_nl(self, 1)     # Object of class Stocks
-                obj_s = Stocks(stocks_var)
+                Concat.add_nl(self, 0)  # Object of class Stocks
+                obj_s = Stocks(self.line)
                 obj_s.main()
             elif len(self.line) == 2:
-                futures_var = Concat.add_nl(self, 2)    # Object of class Futures
-                obj_f = Futures(futures_var)
+                Concat.add_nl(self, 1)  # Object of class Futures
+                Concat.add_spase(self, 0)
+                obj_f = Futures(self.line)
                 obj_f.main()
             elif len(self.line) == 3:
-                options_var = Concat.add_nl(self, 3)    # Object of class Options
-                obj_o = Options(options_var)
+                Concat.add_nl(self, 2)  # Object of class Options
+                Concat.add_spase(self, 0)
+                Concat.add_spase(self, 1)
+                obj_o = Options(self.line)
                 obj_o.main()
             else:
                 raise Exception, EXCEPTION_U
@@ -70,3 +74,17 @@ class Reader(object):
 
     if __name__ == '__main__':
         read_text(check_text())
+
+# Sort results in final file
+try:
+    _file = open(RESULT_TEXT, 'r+')
+    pos = 0
+    line = _file.readlines()
+    _file.seek(pos)
+    sort_text = sorted(line)
+    for new_line in sort_text:
+        _file.write(new_line)
+        pos = _file.tell()
+    _file.close()
+except IOError:
+    print(EXCEPTION_U)
